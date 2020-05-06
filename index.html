@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Monday to PowerBI Adapter</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;900&display=swap" rel="stylesheet">
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body, html {
+                margin: 0;
+                padding: 0 10px;
+                background: #f8f8f8;
+                color: #1b1b2f;
+                font-family: 'Poppins', sans-serif;
+                font-size: 16px;
+            }
+            main {
+                max-width: 1000px;
+                margin: 4em auto;
+            }
+            h1 {
+                font-weight: 700;
+                font-size: 46px;
+                color: #e43f5a;
+            }
+            a {
+                color: #e43f5a;
+                text-decoration: none;
+            }
+
+            label {
+                display: block;
+                margin: 1em 0;
+            }
+            .label span {
+                display: block;
+            }
+            .label input {
+                min-width: 50%;
+            }
+
+            input {
+                font-family: 'Poppins', sans-serif;
+                font-size: 16px;
+                color: #1b1b2f;
+                background: #fff;
+                border: 1px solid rgba(22, 36, 71, 0.2);
+                padding: 7px 12px;
+            }
+
+            input[type=submit], button {
+                background: #1f4068;
+                color: #fff;
+                border: 0;
+                border-radius: 2em;
+                padding: 10px 15px;
+            }
+            input[type=submit]:hover, button:hover {
+                background: #162447;
+            }
+
+            #status {
+                display: none;
+                background: #1f4068;
+                color: #fff;
+                text-align: center;
+                padding: 1em;
+                margin: 1em 0;
+            }
+            #text {
+                display: block;
+                font-size: 24px;
+                font-weight: 700;
+            }
+            #url {
+                display: block;
+                font-family: monospace;
+                font-size: 14px;
+                word-break: break-all;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>Monday.com to Power BI Adapter</h1>
+            <p>This is an adapter that retrieves data from the Monday API v2 and converts to a Power BI friendly format while maintaining the API key safety</p>
+            
+            <form id="create-url">
+                <label class="label">
+                    <span>API Key (v2)</span>
+                    <input type="text" name="key" />
+                </label>
+
+                <label class="label">
+                    <span>Board (ID or URL)</span>
+                    <input type="text" name="board" placeholder="000000000" />
+                </label>
+
+                <label>
+                    <input type="checkbox" name="dismember" checked>
+                    <span title="Adds new columns with data dismembered. E.g. datetime is dismembered into two columns date and time">Add formated columns *</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" name="safe" checked>
+                    <span title="Instead of exposing the API key, which gives access to all of your boards from your account, generate a token that only works for the specified board.">Safe URL *</span>
+                </label>
+                
+                <input type="submit" value="Adapt it!">
+            </form>
+
+            <div id="status">
+                <span id="text"></span>
+                <span id="url"></span>
+            </div>
+
+            <p>Developed by <a href="https://github.com/Guichaguri" target="_blank">Guilherme Chaguri</a>. The code is be available on <a href="https://github.com/Guichaguri/MondayPowerBIAdapter" target="_blank">GitHub</a></p>
+            <p style="font-size: 0.8em;">I've also created a <a href="https://gist.github.com/Guichaguri/83a6d8ab6ce3a695dc104bb4eff9d73d" target="_blank">Power Query to directly connect to the Monday.com API</a>, it's harder to setup, doesn't secure the API key or formats columns but it connects directly to Monday</p>
+        </main>
+
+
+        <script type="text/javascript">
+            var urlRegex = /monday\.com\/boards\/([0-9]+)/;
+            var urlBase = location.protocol + '//' + location.host + '/1/items?';
+
+            function setUrl(url) {
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('text').innerText = 'Import the URL below as a "Web Data Source" in Power BI';
+                document.getElementById('url').innerText = url;
+            }
+
+            function setBasicUrl(key, board, dismember) {
+                setUrl(urlBase +
+                    'key=' + encodeURIComponent(key) +
+                    '&board=' + encodeURIComponent(board) +
+                    (dismember ? '&dismember' : ''));
+            }
+
+            function setTokenUrl(token, dismember) {
+                setUrl(urlBase +
+                    'token=' + encodeURIComponent(token) +
+                    (dismember ? '&dismember' : ''));
+            }
+
+            document.getElementById('create-url').addEventListener('submit', function(e) {
+                var data = new FormData(e.target);
+                var key = data.get('key');
+                var board = data.get('board');
+                var isSafe = data.get('safe');
+                var dismember = data.get('dismember');
+
+                var match = urlRegex.exec(board);
+                if (match) board = match[1];
+
+                if (isSafe) {
+                    document.getElementById('status').style.display = 'block';
+                    document.getElementById('text').innerText = 'Working on it...';
+                    document.getElementById('url').innerText = '';
+
+                    fetch('/token', {
+                        method: 'POST',
+                        body: new URLSearchParams({
+                            key: key,
+                            board: board
+                        })
+                    }).then(
+                        r => r.ok ? r.text() : Promise.reject(r.statusText)
+                    ).then(
+                        r => setTokenUrl(r, dismember),
+                        err => {
+                            console.error(err);
+                            setBasicUrl(key, board, dismember);
+                        }
+                    );
+                } else {
+                    setBasicUrl(key, board, dismember);
+                }
+
+                e.preventDefault();
+            });
+        </script>
+    </body>
+
+</html>

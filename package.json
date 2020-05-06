@@ -1,0 +1,14 @@
+{
+  "name": "monday-to-powerbi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Guilherme Chaguri",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "csv-stringify": "^5.5.0",
+    "express": "^4.17.1",
+    "iconv-lite": "^0.5.1",
+    "pg": "^8.0.3"
+  }
+}
