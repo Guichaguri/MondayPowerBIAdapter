@@ -22,6 +22,6 @@ app.post('/token', require('./generateToken.js').bind(null, db));
 app.get('/1/items', require('./items.js').bind(null, db));
 
 db.connect();
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 
 require('./database.js').setupDatabase(db);
