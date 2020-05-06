@@ -1,0 +1,6 @@
+{
+    "name": "Monday.com to Power BI Adapter",
+    "description": "Web server that converts Monday board items into a Windows-1252 encoded CSV",
+    "repository": "https://github.com/Guichaguri/MondayPowerBIAdapter",
+    "keywords": ["monday", "powerbi", "monday.com"]
+}
