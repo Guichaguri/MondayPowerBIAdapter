@@ -23,32 +23,47 @@ function formatHeader(columns, dismemberer) {
 
         header.push(title);
 
-        if (dismemberer[type]) {
-            dismemberer[type].column_suffixes.forEach(s => header.push(title + ' ' + s));
+        const d = dismemberer[type];
+
+        if (d && d.columnSuffixes) {
+            d.columnSuffixes.forEach(s => header.push(title + ' ' + s));
         }
     });
 
     return header;
 }
 
+function formatDateTime(date) {
+    const updateDate = new Date(date);
+    if (isNaN(updateDate.getTime())) return date;
+
+    return updateDate.getFullYear() + '-' + updateDate.getMonth() + '-' + updateDate.getDay() + ' ' +
+        updateDate.getHours() + ':' + updateDate.getMinutes() + ':' + updateDate.getSeconds();
+}
+
 function formatItems(items, dismemberer) {
     return items.map(item => {
+        
         const data = [
             item['name'],
-            item['updated_at'],
+            formatDateTime(item['updated_at']),
             item['group']['title']
         ];
 
         item['column_values'].forEach(c => {
             const type = c['type'];
-
             if (ignoredTypes.indexOf(type) !== -1) return;
 
-            data.push(c['text']);
+            const d = dismemberer[type];
+            let columnData = c['text'];
 
-            if (dismemberer[type]) {
-                dismemberer[type].process(c, data);
-            }
+            if (d && d.format)
+                columnData = d.format(c, columnData);
+
+            data.push(columnData);
+
+            if (d && d.addColumns)
+                d.addColumns(c, data);
         });
 
         return data;

@@ -9,8 +9,8 @@ function getValue(c) {
 module.exports = {
 
     'date': {
-        column_suffixes: ['(date)', '(time)'],
-        process: (c, data) => {
+        columnSuffixes: ['(date)', '(time)'],
+        addColumns: (c, data) => {
             const value = getValue(c);
             data.push(value && value['date']);
             data.push(value && value['time']);
@@ -18,10 +18,18 @@ module.exports = {
     },
 
     'duration': {
-        column_suffixes: ['(seconds)'],
-        process: (c, data) => {
+        columnSuffixes: ['(seconds)'],
+        addColumns: (c, data) => {
             const value = getValue(c);
             data.push(value && value['duration']);
+        }
+    },
+
+    'number': {
+        format: (c, text) => {
+            let num = parseFloat(text);
+            if (isNaN(num)) return text;
+            return num.toFixed(6);
         }
     }
 
