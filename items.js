@@ -85,7 +85,7 @@ function writeCsv(data, res) {
 module.exports = async function(db, req, res) {
     let key, board;
     let token = req.query.token;
-    let dismember = req.query.dismember;
+    let dismember = req.query.dismember != undefined;
 
     try {
 

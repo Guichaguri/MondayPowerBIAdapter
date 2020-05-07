@@ -8,7 +8,7 @@ This is an adapter that retrieves data from the Monday API v2 and converts to a 
 
 ## Security
 
-You don't have to trust I won't look into your data, you can self-host the adapter or deploy your own to Heroku
+I won't look into your data, but you don't have to trust me. Feel free to self-host the adapter or deploy your own to Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Guichaguri/MondayPowerBIAdapter/)
 
