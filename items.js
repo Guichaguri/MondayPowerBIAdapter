@@ -71,6 +71,13 @@ function formatItems(items, dismemberer) {
 }
 
 function formatData(data, dismemberer) {
+	if (data['errors'] && data['errors'].length) {
+		return [
+			['Error'],
+			...data['errors'].map(e => [e])
+		];
+	}
+
     const boardObj = data['data']['boards'][0];
 
     const columns = boardObj['columns'];
@@ -133,7 +140,8 @@ module.exports = async function(db, req, res) {
 
         writeCsv(formated, res);
     } catch(err) {
+		console.error(err);
         res.statusCode = 500;
-        res.end(err);
+        res.end(err.toString());
     }
 };
