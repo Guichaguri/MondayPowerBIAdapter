@@ -90,7 +90,7 @@
             
             <form id="create-url">
                 <label class="label">
-                    <span>API Key (v2)</span>
+                    <span>API Token (v2)</span>
                     <input type="text" name="key" />
                 </label>
 
@@ -125,6 +125,12 @@
         <script type="text/javascript">
             var urlRegex = /monday\.com\/boards\/([0-9]+)/;
             var urlBase = location.protocol + '//' + location.host + '/1/items?';
+            
+            function setError(error) {
+                document.getElementById('status').style.display = 'block';
+                document.getElementById('text').innerText = error;
+                document.getElementById('url').innerText = '';
+            }
 
             function setUrl(url) {
                 document.getElementById('status').style.display = 'block';
@@ -147,15 +153,23 @@
 
             document.getElementById('create-url').addEventListener('submit', function(e) {
                 var data = new FormData(e.target);
-                var key = data.get('key');
-                var board = data.get('board');
+                var key = data.get('key').trim();
+                var board = data.get('board').trim();
                 var isSafe = data.get('safe');
                 var dismember = data.get('dismember');
 
                 var match = urlRegex.exec(board);
                 if (match) board = match[1];
-
-                if (isSafe) {
+                
+                if (key.length === 0 || board.length === 0) {
+                    setError('Please, fill the API token and Board ID.');
+                } else if (key.length < 100) {
+                    if (key.length === 32) {
+                        setError('The API token must be the one from API v2');
+                    } else {
+                        setError('The API token is invalid. It needs to be the personal API token from API v2.');
+                    }
+                } else if (isSafe) {
                     document.getElementById('status').style.display = 'block';
                     document.getElementById('text').innerText = 'Working on it...';
                     document.getElementById('url').innerText = '';
