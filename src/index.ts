@@ -6,16 +6,15 @@ import { environment } from './environment/environment';
 
 export async function initialize() {
   const db = await connectDatabase();
+  const app = express();
+
+  app.use(express.static('public'));
+  app.use(express.json());
 
   app.post('/token', generateTokenEndpoint.bind(null, db));
   app.get('/1/items', getItemsV1Endpoint.bind(null, db));
+
+  app.listen(environment.PORT);
 }
 
-const app = express();
-
-app.use(express.static('public'));
-app.use(express.json());
-
 initialize();
-
-app.listen(environment.PORT);
