@@ -87,7 +87,7 @@
         <main>
             <h1>Monday.com to Power BI Adapter</h1>
             <p>This is an adapter that retrieves data from the Monday API v2 and converts to a Power BI friendly format while keeping the API key hidden</p>
-            
+
             <form id="create-url">
                 <label class="label">
                     <span>API Token (v2)</span>
@@ -105,10 +105,15 @@
                 </label>
 
                 <label>
+                    <input type="checkbox" name="subitems">
+                    <span title="Multiplies the lines by each subitem, including the subitems columns">Subitems *</span>
+                </label>
+
+                <label>
                     <input type="checkbox" name="safe" checked>
                     <span title="Instead of exposing the API key, which gives access to all of your boards from your account, generate a token that only works for the specified board.">Safe URL *</span>
                 </label>
-                
+
                 <input type="submit" value="Adapt it!">
             </form>
 
@@ -125,7 +130,7 @@
         <script type="text/javascript">
             var urlRegex = /monday\.com\/boards\/([0-9]+)/;
             var urlBase = location.protocol + '//' + location.host + '/1/items?';
-            
+
             function setError(error) {
                 document.getElementById('status').style.display = 'block';
                 document.getElementById('text').innerText = error;
@@ -138,29 +143,32 @@
                 document.getElementById('url').innerText = url;
             }
 
-            function setBasicUrl(key, board, dismember) {
+            function setBasicUrl(key, board, dismember, subitems) {
                 setUrl(urlBase +
                     'key=' + encodeURIComponent(key) +
                     '&board=' + encodeURIComponent(board) +
-                    (dismember ? '&dismember' : ''));
+                    (dismember ? '&dismember' : '') +
+                    (subitems ? '&subitems' : ''));
             }
 
-            function setTokenUrl(token, dismember) {
+            function setTokenUrl(token, dismember, subitems) {
                 setUrl(urlBase +
                     'token=' + encodeURIComponent(token) +
-                    (dismember ? '&dismember' : ''));
+                    (dismember ? '&dismember' : '') +
+                    (subitems ? '&subitems' : ''));
             }
 
             document.getElementById('create-url').addEventListener('submit', function(e) {
-                var data = new FormData(e.target);
-                var key = data.get('key').trim();
-                var board = data.get('board').trim();
-                var isSafe = data.get('safe');
-                var dismember = data.get('dismember');
+                let data = new FormData(e.target);
+                let key = data.get('key').trim();
+                let board = data.get('board').trim();
+                let isSafe = data.get('safe');
+                let dismember = data.get('dismember');
+                let subitems = data.get('subitems');
 
                 var match = urlRegex.exec(board);
                 if (match) board = match[1];
-                
+
                 if (key.length === 0 || board.length === 0) {
                     setError('Please, fill the API token and Board ID.');
                 } else if (key.length < 100) {
@@ -176,21 +184,21 @@
 
                     fetch('/token', {
                         method: 'POST',
-                        body: new URLSearchParams({
-                            key: key,
-                            board: board
-                        })
+                        body: JSON.stringify({ key, board }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
                     }).then(
                         r => r.ok ? r.text() : Promise.reject(r.statusText)
                     ).then(
-                        r => setTokenUrl(r, dismember),
+                        r => setTokenUrl(r, dismember, subitems),
                         err => {
                             console.error(err);
-                            setBasicUrl(key, board, dismember);
+                            setBasicUrl(key, board, dismember, subitems);
                         }
                     );
                 } else {
-                    setBasicUrl(key, board, dismember);
+                    setBasicUrl(key, board, dismember, subitems);
                 }
 
                 e.preventDefault();
