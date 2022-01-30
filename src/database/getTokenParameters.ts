@@ -1,4 +1,5 @@
 import { DatabaseConnection } from './connectDatabase';
+import { Request } from 'express';
 
 export interface TokenParameters {
   key: string;
@@ -20,4 +21,24 @@ export async function getTokenParameters(db: DatabaseConnection, token: string):
     key: row['monday_key'],
     board: row['monday_board']
   };
+}
+
+export async function getParametersFromQuery(db: DatabaseConnection, req: Request): Promise<TokenParameters> {
+  const { token, key, board } = req.query;
+
+  if (token) {
+    const parameters = await getTokenParameters(db, token.toString()).catch(() => undefined);
+
+    if (parameters)
+      return parameters;
+  }
+
+  if (key && board) {
+    return {
+      key: key.toString(),
+      board: parseInt(board.toString()),
+    };
+  }
+
+  throw new Error('Board ID and API credentials were not found');
 }
