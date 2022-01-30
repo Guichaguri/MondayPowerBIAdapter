@@ -8,6 +8,9 @@ import { convertItemsToTable } from './columns/convertItemsToTable';
 import { formatTable } from './format/formatTable';
 
 export async function getItemsV1Endpoint(db: DatabaseConnection, req: Request, res: Response): Promise<void> {
+  res.setHeader('Content-Type', 'text/csv; charset=windows-1252');
+  res.flushHeaders();
+
   const table = await getMondayTable(db, req)
     .catch((err) => [['Error'], [err.message], [err.stack]]);
 
