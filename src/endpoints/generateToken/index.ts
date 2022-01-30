@@ -14,6 +14,10 @@ export async function generateTokenEndpoint(db: DatabaseConnection, req: Request
   if (isNaN(boardId) || !(await isBoardValid(key, boardId)))
     return void res.status(400).end('Invalid board or API key');
 
-  const token = await generateToken(db, key, boardId);
+  const token = await generateToken(db, key, boardId).catch(() => undefined);
+
+  if (!token)
+    return void res.status(500).end('Could not generate the token at this moment');
+
   res.end(token);
 }
