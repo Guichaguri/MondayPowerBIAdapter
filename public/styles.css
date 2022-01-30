@@ -17,6 +17,7 @@ h1 {
     font-weight: 700;
     font-size: 46px;
     color: #e43f5a;
+    text-align: center;
 }
 a {
     color: #e43f5a;
@@ -31,7 +32,21 @@ label {
     display: block;
 }
 .label input {
-    min-width: 50%;
+    width: 100%;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+.checkbox input {
+    margin-right: 1em;
+}
+.checkbox em {
+    display: block;
+    font-size: 75%;
+    font-style: normal;
+    opacity: 0.75;
 }
 
 input {
@@ -46,9 +61,8 @@ input {
 input[type=submit], button {
     background: #1f4068;
     color: #fff;
-    border: 0;
-    border-radius: 2em;
     padding: 10px 15px;
+    min-width: 8em;
 }
 input[type=submit]:hover, button:hover {
     background: #162447;

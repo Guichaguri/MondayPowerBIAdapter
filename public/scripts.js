@@ -1,16 +1,20 @@
 const mondayUrlRegex = /monday\.com\/boards\/([0-9]+)/;
 const apiUrlBase = location.protocol + '//' + location.host + '/1/items';
 
+const statusEl = document.getElementById('status');
+const textEl = document.getElementById('text');
+const urlEl = document.getElementById('url');
+
 function setError(error) {
-    document.getElementById('status').style.display = 'block';
-    document.getElementById('text').innerText = error;
-    document.getElementById('url').innerText = '';
+    statusEl.style.display = 'block';
+    textEl.innerText = error;
+    urlEl.innerText = '';
 }
 
 function setUrl(url) {
-    document.getElementById('status').style.display = 'block';
-    document.getElementById('text').innerText = 'Import the URL below as a "Web Data Source" in Power BI';
-    document.getElementById('url').innerText = url;
+    statusEl.style.display = 'block';
+    textEl.innerText = 'Import the URL below as a "Web Data Source" in Power BI';
+    urlEl.innerText = url;
 }
 
 function setBasicUrl(key, board, dismember, subitems) {
@@ -44,9 +48,9 @@ function getBoardId(str) {
 }
 
 function createSafeUrl(key, board) {
-    document.getElementById('status').style.display = 'block';
-    document.getElementById('text').innerText = 'Working on it...';
-    document.getElementById('url').innerText = '';
+    statusEl.style.display = 'block';
+    textEl.innerText = 'Working on it...';
+    urlEl.innerText = '';
 
     return fetch('/token', {
         method: 'POST',
@@ -91,4 +95,11 @@ document.getElementById('create-url').addEventListener('submit', function(e) {
     }
 
     setBasicUrl(key, board, shouldDismember, includeSubitems);
+});
+
+urlEl.addEventListener('click', function (e) {
+    window.getSelection().selectAllChildren(urlEl);
+
+    navigator.clipboard.writeText(urlEl.innerText)
+        .then(() => console.log('copied to clipboard'));
 });

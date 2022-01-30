@@ -4,6 +4,7 @@ This is an adapter that retrieves data from the Monday API v2 and converts to a 
 
 * Converts the board items to a CSV encoded with Windows-1252
 * Optionally formats a few column types to be easier to work with in Power BI
+* Optionally includes subitems
 * Optionally generates tokens that give access only to a specific board, so you don't have to expose your API Key in a Power BI report (Safe mode)
 
 ## Security
