@@ -88,13 +88,13 @@ document.getElementById('create-url').addEventListener('submit', function(e) {
             (token) => setTokenUrl(token, shouldDismember, includeSubitems),
             error => {
                 console.error(error);
-                setBasicUrl(key, board, shouldDismember, includeSubitems);
+                setBasicUrl(key, boardId, shouldDismember, includeSubitems);
             },
         );
         return;
     }
 
-    setBasicUrl(key, board, shouldDismember, includeSubitems);
+    setBasicUrl(key, boardId, shouldDismember, includeSubitems);
 });
 
 urlEl.addEventListener('click', function (e) {

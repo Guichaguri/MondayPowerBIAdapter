@@ -7,12 +7,12 @@ export async function generateTokenEndpoint(db: DatabaseConnection, req: Request
   const { key, board } = req.body as { key: string, board: string };
 
   if (!key || !board)
-    res.status(400).end('Missing API Key and Board ID properties');
+    return void res.status(400).end('Missing API Key and Board ID properties');
 
   const boardId = parseInt(board);
 
   if (isNaN(boardId) || !(await isBoardValid(key, boardId)))
-    res.status(400).end('Invalid board or API key');
+    return void res.status(400).end('Invalid board or API key');
 
   const token = await generateToken(db, key, boardId);
   res.end(token);
