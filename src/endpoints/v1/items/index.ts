@@ -28,7 +28,7 @@ async function createItemsStream(db: DatabaseConnection, req: Request, res: Resp
   const shouldDismember = req.query.dismember !== undefined;
   const locale = req.query.locale?.toString() || 'en-US';
 
-  const formatter = shouldDismember ? createFormatter(locale) : {};
+  const formatter = createFormatter(shouldDismember, locale);
   const parameters = await getParametersFromQuery(db, req);
 
   const boardStream = new MondayBoardStream(parameters.key, parameters.board, includeSubitems);

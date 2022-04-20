@@ -24,7 +24,7 @@ function formatByLocale(columnValue: MondayColumnValueProxy, locale: string): st
 
   return num.toLocaleString([locale, 'en-US'], {
     notation: 'standard',
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 8,
   });
 }
@@ -49,18 +49,24 @@ const baseFormatter: ColumnFormatter = {
     }
   },
 
-  'number': {
+  'numeric': {
     format: (columnValue) => formatByLocale(columnValue, 'en-US'),
   }
 
 }
 
-export function createFormatter(locale: string): ColumnFormatter {
-  return {
-    ...baseFormatter,
-
-    'number': {
+export function createFormatter(dismember: boolean, locale: string): ColumnFormatter {
+  const numberFormatter: ColumnFormatter = {
+    'numeric': {
       format: (columnValue) => formatByLocale(columnValue, locale),
     },
-  }
+  };
+
+  if (!dismember)
+    return numberFormatter;
+
+  return {
+    ...baseFormatter,
+    ...numberFormatter,
+  };
 }
