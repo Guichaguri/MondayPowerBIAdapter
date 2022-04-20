@@ -1,15 +1,6 @@
-import { columnFormatter, ColumnFormatter } from './columnFormatter';
+import { ColumnFormatter } from './columnFormatter';
 import { BoardColumn } from '../columns/getTableHeaders';
 import { MondayColumnValueProxy } from '../../../../models/monday-column-value.proxy';
-
-export function formatTable(items: MondayColumnValueProxy[][], columns: BoardColumn[], shouldDismember: boolean): string[][] {
-  const formatter = shouldDismember ? columnFormatter : {};
-
-  return [
-    formatHeader(columns, formatter),
-    ...formatItems(items, columns, formatter),
-  ];
-}
 
 export function formatHeader(columns: BoardColumn[], columnFormatter: ColumnFormatter): string[] {
   const header: string[] = [];

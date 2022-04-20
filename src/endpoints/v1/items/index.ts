@@ -6,7 +6,7 @@ import { promisify } from 'util';
 
 import { getParametersFromQuery } from '../../../database/getTokenParameters';
 import { DatabaseConnection } from '../../../database/connectDatabase';
-import { columnFormatter } from './format/columnFormatter';
+import { createFormatter } from './format/columnFormatter';
 import { MondayBoardStream } from './streams/monday-board-stream';
 import { TransformItemsStream } from './streams/transform-items-stream';
 import { StringifyStream } from './streams/stringify-stream';
@@ -26,8 +26,9 @@ async function createItemsStream(db: DatabaseConnection, req: Request, res: Resp
 
   const includeSubitems = req.query.subitems !== undefined;
   const shouldDismember = req.query.dismember !== undefined;
+  const locale = req.query.locale?.toString() || 'en-US';
 
-  const formatter = shouldDismember ? columnFormatter : {};
+  const formatter = shouldDismember ? createFormatter(locale) : {};
   const parameters = await getParametersFromQuery(db, req);
 
   const boardStream = new MondayBoardStream(parameters.key, parameters.board, includeSubitems);

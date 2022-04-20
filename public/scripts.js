@@ -17,7 +17,7 @@ function setUrl(url) {
     urlEl.innerText = url;
 }
 
-function setBasicUrl(key, board, dismember, subitems) {
+function setBasicUrl(key, board, dismember, subitems, useCommas) {
     let url = apiUrlBase + '?key=' + encodeURIComponent(key) + '&board=' + encodeURIComponent(board);
 
     if (dismember)
@@ -26,10 +26,13 @@ function setBasicUrl(key, board, dismember, subitems) {
     if (subitems)
         url += '&subitems';
 
+    if (useCommas)
+        url += '&locale=pt-BR';
+
     setUrl(url);
 }
 
-function setTokenUrl(token, dismember, subitems) {
+function setTokenUrl(token, dismember, subitems, useCommas) {
     let url = apiUrlBase + '?token=' + encodeURIComponent(token);
 
     if (dismember)
@@ -37,6 +40,9 @@ function setTokenUrl(token, dismember, subitems) {
 
     if (subitems)
         url += '&subitems';
+
+    if (useCommas)
+        url += '&locale=pt-BR';
 
     setUrl(url);
 }
@@ -68,6 +74,7 @@ document.getElementById('create-url').addEventListener('submit', function(e) {
     const hideCredentials = data.get('safe');
     const shouldDismember = data.get('dismember');
     const includeSubitems = data.get('subitems');
+    const useCommas = data.get('comma');
 
     e.preventDefault();
 
@@ -85,16 +92,16 @@ document.getElementById('create-url').addEventListener('submit', function(e) {
 
     if (hideCredentials) {
         createSafeUrl(key, boardId).then(
-            (token) => setTokenUrl(token, shouldDismember, includeSubitems),
+            (token) => setTokenUrl(token, shouldDismember, includeSubitems, useCommas),
             error => {
                 console.error(error);
-                setBasicUrl(key, boardId, shouldDismember, includeSubitems);
+                setBasicUrl(key, boardId, shouldDismember, includeSubitems, useCommas);
             },
         );
         return;
     }
 
-    setBasicUrl(key, boardId, shouldDismember, includeSubitems);
+    setBasicUrl(key, boardId, shouldDismember, includeSubitems, useCommas);
 });
 
 urlEl.addEventListener('click', function (e) {

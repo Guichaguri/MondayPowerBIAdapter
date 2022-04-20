@@ -16,7 +16,20 @@ function parseColumnValue<T>(columnValue: MondayColumnValueProxy): Partial<T> {
   }
 }
 
-export const columnFormatter: ColumnFormatter = {
+function formatByLocale(columnValue: MondayColumnValueProxy, locale: string): string {
+  const num = parseFloat(columnValue.text);
+
+  if (isNaN(num))
+    return columnValue.text;
+
+  return num.toLocaleString([locale, 'en-US'], {
+    notation: 'standard',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 8,
+  });
+}
+
+const baseFormatter: ColumnFormatter = {
 
   'date': {
     additionalColumnSuffixes: ['(date)', '(time)'],
@@ -37,14 +50,17 @@ export const columnFormatter: ColumnFormatter = {
   },
 
   'number': {
-    format: (columnValue) => {
-      const num = parseFloat(columnValue.text);
-
-      if (isNaN(num))
-        return columnValue.text;
-
-      return num.toFixed(6);
-    }
+    format: (columnValue) => formatByLocale(columnValue, 'en-US'),
   }
 
+}
+
+export function createFormatter(locale: string): ColumnFormatter {
+  return {
+    ...baseFormatter,
+
+    'number': {
+      format: (columnValue) => formatByLocale(columnValue, locale),
+    },
+  }
 }
