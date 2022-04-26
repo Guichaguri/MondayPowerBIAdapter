@@ -10,7 +10,7 @@ export type ColumnFormatter = Record<string, FormatterType>;
 
 function parseColumnValue<T>(columnValue: MondayColumnValueProxy): Partial<T> {
   try {
-    return JSON.parse(columnValue.value ?? '{}');
+    return JSON.parse(columnValue?.value ?? '{}');
   } catch(err) {
     return {};
   }
