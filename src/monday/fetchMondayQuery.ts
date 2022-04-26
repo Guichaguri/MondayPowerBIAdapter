@@ -24,6 +24,7 @@ function postMondayRequest(key: string, data: string): Promise<string> {
       let body = '';
       res.on('data', (chunk) => body += chunk);
       res.once('end', () => resolve(body));
+      res.once('error', (err) => reject(err));
     });
 
     req.once('error', (err) => reject(err));

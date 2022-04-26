@@ -10,6 +10,7 @@ import { createFormatter } from './format/columnFormatter';
 import { MondayBoardStream } from './streams/monday-board-stream';
 import { TransformItemsStream } from './streams/transform-items-stream';
 import { StringifyStream } from './streams/stringify-stream';
+import { MondayClient } from '../../../monday/monday-client';
 
 const pipelinePromise = promisify(pipeline);
 
@@ -31,8 +32,10 @@ async function createItemsStream(db: DatabaseConnection, req: Request, res: Resp
   const formatter = createFormatter(shouldDismember, locale);
   const parameters = await getParametersFromQuery(db, req);
 
-  const boardStream = new MondayBoardStream(parameters.key, parameters.board, includeSubitems);
-  const formatStream = new TransformItemsStream(parameters.key, includeSubitems, formatter);
+  const client = new MondayClient(parameters.key);
+
+  const boardStream = new MondayBoardStream(client, parameters.board, includeSubitems);
+  const formatStream = new TransformItemsStream(client, includeSubitems, formatter);
 
   const csvStream = csv({ delimiter: ',' });
   const stringifyStream = new StringifyStream();

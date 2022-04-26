@@ -4,6 +4,7 @@ import { formatHeader, formatItems } from '../format/formatTable';
 import { ColumnFormatter } from '../format/columnFormatter';
 import { BoardColumn, getTableHeaders } from '../columns/getTableHeaders';
 import { convertItemsToTable } from '../columns/convertItemsToTable';
+import { MondayClient } from '../../../../monday/monday-client';
 
 /**
  * Transforms monday boards into a table formatted as string arrays
@@ -11,7 +12,7 @@ import { convertItemsToTable } from '../columns/convertItemsToTable';
 export class TransformItemsStream extends Transform {
 
   constructor(
-    private readonly key: string,
+    private readonly client: MondayClient,
     private readonly includeSubItems: boolean,
     private readonly columnFormatter: ColumnFormatter,
   ) {
@@ -35,7 +36,7 @@ export class TransformItemsStream extends Transform {
    */
   private async transformBoardItems(chunk: MondayBoardProxy): Promise<void> {
     if (!this.headersAdded) {
-      this.headers = await getTableHeaders(this.key, chunk, this.includeSubItems);
+      this.headers = await getTableHeaders(this.client, chunk, this.includeSubItems);
       this.push(formatHeader(this.headers, this.columnFormatter));
       this.headersAdded = true;
     }
@@ -49,6 +50,9 @@ export class TransformItemsStream extends Transform {
   _transform(chunk: MondayBoardProxy, encoding: BufferEncoding, callback: TransformCallback) {
     this.transformBoardItems(chunk)
       .then(() => callback())
-      .catch(err => callback(err));
+      .catch(err => {
+        console.error(err);
+        callback(err);
+      });
   }
 }

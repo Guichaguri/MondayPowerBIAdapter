@@ -1,8 +1,9 @@
 import { MondayBoardProxy } from '../models/monday-board.proxy';
-import { fetchMondayQuery } from './fetchMondayQuery';
+import { MondayClient } from './monday-client';
 
 export async function getMondayBoard(
-  key: string, boardId: number, page: number, limit: number,
+  client: MondayClient,
+  boardId: number, page: number, limit: number,
   includeBoardMetadata: boolean, includeSubItems: boolean,
 ): Promise<MondayBoardProxy> {
   const boardMetadataQuery =
@@ -16,6 +17,7 @@ export async function getMondayBoard(
 
   const query =
     `query {
+      complexity { query, after, reset_in_x_seconds }
       boards(ids: [${boardId}]) {
         ${includeBoardMetadata ? boardMetadataQuery : ''}
         items(limit: ${limit}, page: ${page}) {
@@ -26,7 +28,7 @@ export async function getMondayBoard(
       }
     }`;
 
-  const result = await fetchMondayQuery<{ boards: MondayBoardProxy[] }>(key, query);
+  const result = await client.query<{ boards: MondayBoardProxy[] }>(query);
 
   return result.boards[0];
 }

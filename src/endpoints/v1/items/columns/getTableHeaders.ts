@@ -1,6 +1,7 @@
 import { getMondayBoardsMetadata } from '../../../../monday/getMondayBoardMetadata';
 import { MondayBoardProxy } from '../../../../models/monday-board.proxy';
 import { MondayColumnProxy } from '../../../../models/monday-column.proxy';
+import { MondayClient } from '../../../../monday/monday-client';
 
 export interface BoardColumn {
   isMainBoard: boolean;
@@ -24,7 +25,7 @@ const predefinedColumns = [
   {id: PredefinedColumnType.GROUP, title: 'Group', mainOnly: true},
 ];
 
-export async function getTableHeaders(key: string, board: MondayBoardProxy, includeSubitems: boolean): Promise<BoardColumn[]> {
+export async function getTableHeaders(client: MondayClient, board: MondayBoardProxy, includeSubitems: boolean): Promise<BoardColumn[]> {
   const columnIds: BoardColumn[] = [
     ...getColumns(board, true),
   ];
@@ -33,7 +34,7 @@ export async function getTableHeaders(key: string, board: MondayBoardProxy, incl
     return columnIds;
 
   const subitemBoardIds = getSubitemBoardIds(board.columns);
-  const subitemBoards = await getMondayBoardsMetadata(key, subitemBoardIds);
+  const subitemBoards = await getMondayBoardsMetadata(client, subitemBoardIds);
 
   for (const subitemBoard of subitemBoards) {
     columnIds.push(...getColumns(subitemBoard, false));
