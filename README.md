@@ -12,7 +12,12 @@ This is an adapter that retrieves data from the Monday API v2 and converts to a 
 I won't look into your data, but you don't have to trust me. Feel free to self-host the adapter or deploy your own to Heroku using the free plan.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Guichaguri/MondayPowerBIAdapter/)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGuichaguri%2FMondayPowerBIAdapter.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGuichaguri%2FMondayPowerBIAdapter?ref=badge_shield)
 
 ## Alternatives
 
 * [Power Query M script](https://gist.github.com/Guichaguri/83a6d8ab6ce3a695dc104bb4eff9d73d)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGuichaguri%2FMondayPowerBIAdapter.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FGuichaguri%2FMondayPowerBIAdapter?ref=badge_large)
