@@ -32,7 +32,7 @@ export async function waitToRestoreComplexity(complexity: ComplexityInfoModel | 
   if (!complexity || !complexity.drained)
     return;
 
-  const ms = complexity.restoreAt - Date.now();
+  const ms = Math.min(complexity.restoreAt - Date.now(), 60000);
 
   if (ms <= 0)
     return;
