@@ -41,6 +41,11 @@ async function createItemsStream(db: DatabaseConnection, req: Request, res: Resp
   const stringifyStream = new StringifyStream();
   const iconvStream = iconv.encodeStream('win-1252');
 
+  boardStream.once('error', err => {
+    res.write('Error\n');
+    res.end(err.toString());
+  });
+
   await pipelinePromise(boardStream, formatStream, csvStream, stringifyStream, iconvStream, res);
 }
 
