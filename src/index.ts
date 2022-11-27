@@ -5,7 +5,9 @@ import { generateTokenEndpoint } from './endpoints/generateToken';
 import { environment } from './environment/environment';
 
 export async function initialize() {
-  const db = await connectDatabase();
+  const db = await connectDatabase()
+    .catch(error => { console.error(error); return null; });
+  
   const app = express();
 
   app.use(express.static('public'));

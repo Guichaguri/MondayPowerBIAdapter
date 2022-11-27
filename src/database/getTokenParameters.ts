@@ -7,6 +7,9 @@ export interface TokenParameters {
 }
 
 export async function getTokenParameters(db: DatabaseConnection, token: string): Promise<TokenParameters | undefined> {
+  if (!db)
+    throw new Error('The database must be available in order to request by token.');
+
   const res = await db.query(
     `SELECT monday_key, monday_board FROM monday_tokens WHERE token = $1`,
     [token],

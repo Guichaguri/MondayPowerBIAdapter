@@ -12,6 +12,9 @@ function createRandomToken() {
 }
 
 async function findToken(db: DatabaseConnection, key: string, board: number): Promise<string | undefined> {
+  if (!db)
+    return undefined;
+
   const res = await db.query<{ token: string }>(
     `SELECT token FROM monday_tokens WHERE monday_key = $1 AND monday_board = $2`,
     [key, board],
@@ -25,6 +28,9 @@ async function findToken(db: DatabaseConnection, key: string, board: number): Pr
 }
 
 async function createToken(db: DatabaseConnection, key: string, board: number): Promise<string> {
+  if (!db)
+    throw new Error('The database must be available in order to generate tokens');
+
   let token: string;
   let res: QueryResult;
 

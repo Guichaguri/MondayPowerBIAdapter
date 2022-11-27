@@ -1,9 +1,12 @@
 import { Client } from 'pg';
 import { environment } from '../environment/environment';
 
-export type DatabaseConnection = Client;
+export type DatabaseConnection = Client | null;
 
 async function setupDatabase(db: DatabaseConnection) {
+  if (!db)
+    return;
+
   await db.query(`
     CREATE TABLE IF NOT EXISTS monday_tokens (
       token character varying(64) COLLATE pg_catalog."default" NOT NULL,
@@ -14,6 +17,9 @@ async function setupDatabase(db: DatabaseConnection) {
 }
 
 export async function connectDatabase(): Promise<DatabaseConnection> {
+  if (!environment.DATABASE_URL)
+    return null;
+
   const db = new Client({
     connectionString: environment.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
