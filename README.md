@@ -7,11 +7,38 @@ This is an adapter that retrieves data from the Monday API v2 and converts to a 
 * Optionally includes subitems
 * Optionally generates tokens that give access only to a specific board, so you don't have to expose your API Key in a Power BI report (Safe mode)
 
-## Security
+## Running
 
-I won't look into your data, but you don't have to trust me. Feel free to self-host the adapter or deploy your own to Heroku:
+### NodeJS
+
+* Install NodeJS (Version 18 is recommended)
+* Run `npm install` to install the dependencies
+* Run `npm run build` to build assets
+* Run `npm run start` to start the server
+
+### Docker
+
+* Install Docker
+* Run `docker build . --tag monday-powerbi` to build the image
+* Run `docker run -d -p 3000:3000 monday-powerbi` to run the container
+
+### Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Guichaguri/MondayPowerBIAdapter/)
+
+## Environment Variables
+
+| Variable           | Description                            | Default                      |
+|--------------------|----------------------------------------|------------------------------|
+| `PORT`             | The HTTP server port number            | `3000`                       |
+| `DATABASE_URL`     | The PostgreSQL database connection URL | -                            |
+| `MONDAY_BASE_URL`  | The Monday API base URL                | `https://api.monday.com/v2`  |
+
+The database is optional, and if available, allows you to generate tokens that give access only to a specific board.
+
+## Security
+
+I won't look into your data, but you don't have to trust me, feel free to self-host the adapter.
 
 ## Alternatives
 
