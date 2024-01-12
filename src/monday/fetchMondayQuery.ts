@@ -19,6 +19,7 @@ function postMondayRequest(key: string, data: string): Promise<string> {
         'Content-Type': 'application/json',
         'Content-Length': data.length,
         'Authorization': 'Bearer ' + key,
+        'API-Version': '2024-01',
       }
     }, (res) => {
       let body = '';

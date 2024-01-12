@@ -8,19 +8,12 @@ export interface FormatterType {
 
 export type ColumnFormatter = Record<string, FormatterType>;
 
-function parseColumnValue<T>(columnValue: MondayColumnValueProxy): Partial<T> {
-  try {
-    return JSON.parse(columnValue?.value ?? '{}');
-  } catch(err) {
-    return {};
-  }
-}
-
 function formatByLocale(columnValue: MondayColumnValueProxy, locale: string): string {
-  const num = parseFloat(columnValue.text);
+  const str = columnValue?.display_value || columnValue?.text || '';
+  const num = columnValue?.number ?? parseFloat(str);
 
   if (isNaN(num))
-    return columnValue.text;
+    return str;
 
   return num.toLocaleString([locale, 'en-US'], {
     notation: 'standard',
@@ -33,23 +26,15 @@ const baseFormatter: ColumnFormatter = {
 
   'date': {
     additionalColumnSuffixes: ['(date)', '(time)'],
-    addAdditionalColumns: (columnValue) => {
-      const value = parseColumnValue<{ date: string, time: string }>(columnValue);
-
-      return [value.date, value.time];
-    }
+    addAdditionalColumns: (columnValue) => [columnValue?.date, columnValue?.time],
   },
 
-  'duration': {
+  'time_tracking': {
     additionalColumnSuffixes: ['(seconds)'],
-    addAdditionalColumns: (columnValue) => {
-      const value = parseColumnValue<{ duration: string }>(columnValue);
-
-      return [value.duration];
-    }
+    addAdditionalColumns: (columnValue) => [columnValue?.duration?.toString()],
   },
 
-  'numeric': {
+  'numbers': {
     format: (columnValue) => formatByLocale(columnValue, 'en-US'),
   }
 
@@ -57,7 +42,7 @@ const baseFormatter: ColumnFormatter = {
 
 export function createFormatter(dismember: boolean, locale: string): ColumnFormatter {
   const numberFormatter: ColumnFormatter = {
-    'numeric': {
+    'numbers': {
       format: (columnValue) => formatByLocale(columnValue, locale),
     },
   };

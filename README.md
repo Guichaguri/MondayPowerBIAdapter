@@ -1,4 +1,4 @@
-# [Monday.com to Power BI Adapter](https://monday-powerbi.herokuapp.com/)
+# Monday.com to Power BI Adapter
 
 This is an adapter that retrieves data from the Monday API v2 and converts to a Power BI friendly format while maintaining the API key safety.
 

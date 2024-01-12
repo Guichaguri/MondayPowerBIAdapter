@@ -9,7 +9,7 @@ export function convertItemsToTable(board: MondayBoardProxy, columns: BoardColum
 
   const boardId = board.id;
 
-  board.items.forEach(item => addItemsToTable(values, boardId, columns, item));
+  board.items_page.items.forEach(item => addItemsToTable(values, boardId, columns, item));
 
   return values;
 }

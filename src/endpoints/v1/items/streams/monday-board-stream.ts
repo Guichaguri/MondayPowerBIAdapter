@@ -1,6 +1,8 @@
 import { Readable } from 'stream';
 import { getMondayBoard } from '../../../../monday/getMondayBoard';
 import { MondayClient } from '../../../../monday/monday-client';
+import { MondayBoardProxy } from '../../../../models/monday-board.proxy';
+import { getMondayNextItems } from '../../../../monday/getMondayNextItems';
 
 /**
  * Retrieves a full board chunked by page
@@ -21,9 +23,14 @@ export class MondayBoardStream extends Readable {
   private hasMore: boolean = true;
 
   /**
-   * The page number
+   * The next page cursor
    */
-  private page: number = 1;
+  private pageCursor: string | null = null;
+
+  /**
+   * Monday board data
+   */
+  private board?: MondayBoardProxy;
 
   _read(size: number) {
     if (!this.hasMore) {
@@ -31,19 +38,40 @@ export class MondayBoardStream extends Readable {
       return;
     }
 
-    const page = this.page;
-    const firstPage = this.page === 1;
-    const limit = 100; // This limit must be equal or lower to 100 to not hit a different rate limit bucket
-
-    getMondayBoard(this.client, this.boardId, page, limit, firstPage, this.includeSubItems)
+    this.getNextData()
       .then(result => {
-        this.page++;
-        this.hasMore = result.items.length >= limit;
         this.push(result);
       })
       .catch(err => {
         console.error(err);
         this.destroy(err);
       });
+  }
+
+  private async getNextData(): Promise<MondayBoardProxy> {
+    const client = this.client;
+    const includeSubItems = this.includeSubItems;
+    const cursor = this.pageCursor;
+    const limit = 100;
+
+    if (!this.board || !cursor) {
+      const result = await getMondayBoard(client, this.boardId, limit, includeSubItems);
+
+      this.board = result;
+      this.pageCursor = result.items_page.cursor;
+      this.hasMore = !!result.items_page.cursor;
+
+      return result;
+    } else {
+      const result = await getMondayNextItems(client, cursor, limit, includeSubItems);
+
+      this.pageCursor = result.cursor;
+      this.hasMore = !!result.cursor;
+
+      return {
+        ...this.board,
+        items_page: result,
+      };
+    }
   }
 }

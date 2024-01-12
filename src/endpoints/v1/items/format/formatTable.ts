@@ -26,7 +26,7 @@ export function formatItems(items: MondayColumnValueProxy[][], columns: BoardCol
       const columnValue = values[i];
 
       const formatter = columnFormatter[column.type];
-      let columnData: string | undefined = columnValue?.text;
+      let columnData: string | undefined = columnValue?.display_value || columnValue?.text;
 
       if (formatter?.format && columnValue)
         columnData = formatter.format(columnValue);

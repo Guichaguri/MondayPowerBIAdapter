@@ -17,7 +17,7 @@ export enum PredefinedColumnType {
   GROUP = '__group',
 }
 
-const ignoredTypes = ['name', 'subtasks', 'formula', 'columns-battery'];
+const ignoredTypes = ['name', 'subtasks', 'formula', 'progress'];
 
 const predefinedColumns = [
   {id: PredefinedColumnType.TITLE, title: 'Title'},
